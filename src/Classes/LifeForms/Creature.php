@@ -17,6 +17,44 @@ abstract class Creature extends Entity
     protected PathAlgorithmInterface $algorithm;
     protected int $remainingSteps;
     abstract public function Turn(bool $isEat, int $remainingSteps);
+
+    protected function Move(bool $isEat, int $stepsNeeded, Coordinate $creatureCord): void
+    {
+        if ($this->remainingSteps < $stepsNeeded)
+        {
+            $this->noFood($isEat);
+            return;
+        }
+        $this->remainingSteps-=$stepsNeeded;
+        $this->coordinate = $creatureCord;
+    }
+
+    protected function haveFood(): void
+    {
+        if (!$this->hunger)
+        {
+            $this->hp++;
+        }
+        else
+        {
+            $this->hunger = false;
+        }
+    }
+
+    protected function noFood(bool $isEat): void
+    {
+        if (!$isEat)
+        {
+            if ($this->hunger)
+            {
+                $this->hp--;
+            }
+            else
+            {
+                $this->hunger = true;
+            }
+        }
+    }
     public function getSpeed(): int
     {
         return $this->speed;
