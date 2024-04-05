@@ -36,13 +36,13 @@ class Predator extends Creature implements PredatorEatable
         }
         $target = $this->map->getEntity($targetCord);
         $targetHp = $target->getHp();
-        while ($this->remainingSteps > 0 && $targetHp > 0)
+        while ($this->remainingSteps > 0 || $targetHp > 0)
         {
             $this->remainingSteps--;
             $targetHp-=$this->power;
         }
 
-        if ($targetHp > 0)
+        if ($this->remainingSteps == 0)
         {
             $this->noFood($isEat);
             return;
