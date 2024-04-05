@@ -1,0 +1,16 @@
+{
+    "name": "123/zhukov_simulation",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "123\\ZhukovSimulation\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Stepan",
+            "email": "pirogov1923@mail.ru"
+        }
+    ],
+    "require": {}
+}
