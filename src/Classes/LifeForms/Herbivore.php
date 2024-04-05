@@ -18,15 +18,15 @@ class Herbivore extends Creature
         $this->algorithm = $algorithm;
     }
 
-    public function makeActions(bool $isEat, int $remainingSteps): void
+    public function Turn(bool $isEat, int $remainingSteps): void
     {
         $this->remainingSteps = $remainingSteps;
         [$stepsNeeded, $targetCord, $creatureCord] = $this->algorithm->findNearest($this->target, $this->remainingSteps);
-        $this->makeMove($isEat, $stepsNeeded, $creatureCord);
-        $this->makeEat($isEat, $targetCord);
+        $this->Move($isEat, $stepsNeeded, $creatureCord);
+        $this->Eat($isEat, $targetCord);
     }
 
-    private function makeMove(bool $isEat, int $stepsNeeded, Coordinate $creatureCord): void
+    private function Move(bool $isEat, int $stepsNeeded, Coordinate $creatureCord): void
     {
         if ($this->remainingSteps < $stepsNeeded)
         {
@@ -37,14 +37,14 @@ class Herbivore extends Creature
         $this->coordinate = $creatureCord;
     }
 
-    private function makeEat(bool $isEat, Coordinate $targetCord): void
+    private function Eat(bool $isEat, Coordinate $targetCord): void
     {
         if ($this->remainingSteps > 0)
         {
-            $this->eat($targetCord);
+            $this->EatGrass($targetCord);
             if ($this->remainingSteps > 0)
             {
-                $this->makeActions(true, $this->remainingSteps);
+                $this->Turn(true, $this->remainingSteps);
             }
         }
         else
@@ -52,7 +52,7 @@ class Herbivore extends Creature
             $this->noFood($isEat);
         }
     }
-    private function eat(Coordinate $coordinate): void
+    private function EatGrass(Coordinate $coordinate): void
     {
         $this->remainingSteps--;
         $this->haveFood();

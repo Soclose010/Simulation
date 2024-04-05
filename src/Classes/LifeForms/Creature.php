@@ -16,7 +16,7 @@ abstract class Creature extends Entity
     protected MapInterface $map;
     protected PathAlgorithmInterface $algorithm;
     protected int $remainingSteps;
-    abstract public function makeActions(bool $isEat, int $remainingSteps);
+    abstract public function Turn(bool $isEat, int $remainingSteps);
     public function getSpeed(): int
     {
         return $this->speed;
