@@ -2,7 +2,7 @@
 
 namespace App\Classes\Items;
 
-use App\Classes\LifeForms\Entity;
+use App\Classes\Core\Entity;
 
 class Rock extends Entity
 {
