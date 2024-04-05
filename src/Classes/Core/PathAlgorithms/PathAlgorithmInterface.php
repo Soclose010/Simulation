@@ -4,5 +4,5 @@ namespace App\Classes\Core\PathAlgorithms;
 interface PathAlgorithmInterface
 {
 
-    public function findNearest(string $target, int $steps) : array;
+    public function findNearest(string $target) : array;
 }

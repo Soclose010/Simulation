@@ -21,7 +21,7 @@ class Herbivore extends Creature
     public function Turn(bool $isEat, int $remainingSteps): void
     {
         $this->remainingSteps = $remainingSteps;
-        [$stepsNeeded, $targetCord, $creatureCord] = $this->algorithm->findNearest($this->target, $this->remainingSteps);
+        [$stepsNeeded, $targetCord, $creatureCord] = $this->algorithm->findNearest($this->target);
         $this->Move($isEat, $stepsNeeded, $creatureCord);
         $this->Eat($isEat, $targetCord);
     }
