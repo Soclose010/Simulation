@@ -26,11 +26,11 @@ class Herbivore extends Creature
         $this->Eat($isEat, $targetCord);
     }
 
-    private function Eat(bool $isEat, Coordinate $target): void
+    private function Eat(bool $isEat, Coordinate $targetCord): void
     {
         if ($this->remainingSteps > 0)
         {
-            $this->EatGrass($target);
+            $this->EatGrass($targetCord);
             if ($this->remainingSteps > 0)
             {
                 $this->Turn(true, $this->remainingSteps);
