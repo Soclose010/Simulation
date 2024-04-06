@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Classes\Core;
+namespace App\Classes\LifeForms\Food;
+
+use App\Classes\LifeForms\Entity;
 
 abstract class Food extends Entity
 {
