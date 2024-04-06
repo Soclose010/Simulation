@@ -5,6 +5,7 @@ namespace App\Classes\LifeForms;
 use App\Classes\Core\Coordinate;
 use App\Classes\Core\Map\MapInterface;
 use App\Classes\Core\PathAlgorithms\PathAlgorithmInterface;
+use App\Classes\LifeForms\Food\Food;
 use App\Classes\LifeForms\Food\HerbivoreEatable;
 use App\Classes\LifeForms\Food\PredatorEatable;
 
@@ -28,13 +29,18 @@ class Herbivore extends Creature implements PredatorEatable
 
     protected function Interact(Entity $target): void
     {
-        $this->Eat($target);
-    }
-    private function Eat(HerbivoreEatable $target): void
-    {
-        if ($this->haveSteps()) {
-            $this->haveFood();
-            $this->map->eat($target);
+        if ($this->haveSteps())
+        {
+            $this->Eat($target);
         }
+        else
+        {
+            $this->noFood();
+        }
+    }
+    protected function Eat(Food $target): void
+    {
+        $this->haveFood();
+        $this->map->eat($target);
     }
 }
