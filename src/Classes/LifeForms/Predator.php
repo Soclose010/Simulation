@@ -9,15 +9,11 @@ use App\Classes\Core\PathAlgorithms\PathAlgorithmInterface;
 class Predator extends Creature implements PredatorEatable
 {
     private int $power;
-    public function __construct(int $speed, int $hp, int $power, Coordinate $coordinate, MapInterface $map, PathAlgorithmInterface $algorithm)
+    public function __construct(int $weight, int $speed, int $hp, int $power, Coordinate $coordinate, MapInterface $map, PathAlgorithmInterface $algorithm)
     {
-        $this->speed = $speed;
-        $this->hp = $hp;
+        parent::__construct($weight,$speed ,$hp,$coordinate,$map);
         $this->power = $power;
-        $this->coordinate = $coordinate;
-        $this->map = $map;
         $this->algorithm = $algorithm;
-        $this->hunger = false;
         $this->target = PredatorEatable::class;
     }
     public function Turn(bool $isEat, int $remainingSteps): void
@@ -34,7 +30,7 @@ class Predator extends Creature implements PredatorEatable
         {
             return;
         }
-        $target = $this->map->getEntity($targetCord);
+        $target = $this->map->getEntityByCord($targetCord);
         $targetHp = $target->getHp();
         while ($this->remainingSteps > 0 || $targetHp > 0)
         {

@@ -2,11 +2,11 @@
 
 namespace App\Classes\LifeForms;
 use App\Classes\Core\Coordinate;
-use App\Classes\Core\Entity;
+use App\Classes\Core\Food;
 use App\Classes\Core\Map\MapInterface;
 use App\Classes\Core\PathAlgorithms\PathAlgorithmInterface;
 
-abstract class Creature extends Entity
+abstract class Creature extends Food
 {
     protected int $speed;
     protected int $hp;
@@ -16,6 +16,17 @@ abstract class Creature extends Entity
     protected MapInterface $map;
     protected PathAlgorithmInterface $algorithm;
     protected int $remainingSteps;
+
+    public function __construct(int $weight, int $speed, int $hp, Coordinate $coordinate, MapInterface $map)
+    {
+        parent::__construct($weight);
+        $this->speed = $speed;
+        $this->hp = $hp;
+        $this->hunger = false;
+        $this->coordinate = $coordinate;
+        $this->map = $map;
+    }
+
     abstract public function Turn(bool $isEat, int $remainingSteps);
 
     protected function Move(bool $isEat, int $stepsNeeded, Coordinate $creatureCord): void
@@ -59,4 +70,11 @@ abstract class Creature extends Entity
     {
         return $this->speed;
     }
+
+    public function getHp(): int
+    {
+        return $this->hp;
+    }
+
+
 }

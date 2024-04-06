@@ -6,16 +6,13 @@ use App\Classes\Core\Coordinate;
 use App\Classes\Core\Map\MapInterface;
 use App\Classes\Core\PathAlgorithms\PathAlgorithmInterface;
 
-class Herbivore extends Creature
+class Herbivore extends Creature implements PredatorEatable
 {
-    public function __construct(int $speed, int $hp, Coordinate $coordinate, MapInterface $map, PathAlgorithmInterface $algorithm)
+    public function __construct(int $weight, int $speed, int $hp, Coordinate $coordinate, MapInterface $map, PathAlgorithmInterface $algorithm)
     {
-        $this->speed = $speed;
-        $this->hp = $hp;
-        $this->hunger = false;
-        $this->coordinate = $coordinate;
-        $this->map = $map;
+        parent::__construct($weight,$speed ,$hp,$coordinate,$map);
         $this->algorithm = $algorithm;
+        $this->target = HerbivoreEatable::class;
     }
 
     public function Turn(bool $isEat, int $remainingSteps): void
