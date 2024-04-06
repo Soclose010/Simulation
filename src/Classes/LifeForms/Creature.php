@@ -32,6 +32,7 @@ abstract class Creature extends Food implements Eatable
 
     abstract public function Turn(int $remainingSteps);
     abstract protected function Interact(Entity $target);
+    abstract protected function Eat(Food $target);
 
     protected function Move(array $steps): void
     {
@@ -89,6 +90,16 @@ abstract class Creature extends Food implements Eatable
             return false;
         }
         return true;
+    }
+
+    protected function isAlive(): bool
+    {
+        return $this->hp > 0;
+    }
+
+    public function changeTarget(string $newTarget): void
+    {
+        $this->target = $newTarget;
     }
     public function getSpeed(): int
     {
