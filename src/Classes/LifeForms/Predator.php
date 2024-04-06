@@ -5,6 +5,8 @@ namespace App\Classes\LifeForms;
 use App\Classes\Core\Coordinate;
 use App\Classes\Core\Map\MapInterface;
 use App\Classes\Core\PathAlgorithms\PathAlgorithmInterface;
+use App\Classes\LifeForms\Food\Food;
+use App\Classes\LifeForms\Food\PredatorEatable;
 
 class Predator extends Creature implements PredatorEatable
 {
@@ -16,43 +18,43 @@ class Predator extends Creature implements PredatorEatable
         $this->algorithm = $algorithm;
         $this->target = PredatorEatable::class;
     }
-    public function Turn(bool $isEat, int $remainingSteps): void
+    public function Turn(int $remainingSteps): void
     {
         $this->remainingSteps = $remainingSteps;
-        [$stepsNeeded, $targetCord, $creatureCord] = $this->algorithm->findNearest($this->target);
-        $this->Move($isEat, $stepsNeeded, $creatureCord);
-        $this->Fight($isEat, $targetCord);
+        [$steps, $target] = $this->algorithm->findNearest($this->target);
+        $this->Move($steps);
+        $this->Interact($target);
+        $this->keepTurn();
     }
 
-    private function Fight(bool $isEat, Coordinate $targetCord): void
+    protected function Interact(Entity $target): void
     {
-        if ($this->remainingSteps == 0)
-        {
-            return;
-        }
-        $target = $this->map->getEntityByCord($targetCord);
-        $targetHp = $target->getHp();
-        while ($this->remainingSteps > 0 || $targetHp > 0)
-        {
-            $this->remainingSteps--;
-            $targetHp-=$this->power;
-        }
-
-        if ($this->remainingSteps == 0)
-        {
-            $this->noFood($isEat);
-            return;
-        }
-        $this->Eat($target);
+       if (!$this->haveSteps())
+       {
+           $this->noFood();
+           return;
+       }
+       if ($target->isAlive())
+       {
+           $this->Attack($target);
+       }
+       else
+       {
+           $this->Eat($target);
+       }
     }
 
-    private function Eat(Entity $target): void
+    private function Attack(Food $target): void
     {
+        $this->remainingSteps--;
+        $this->map->damage($target, $this->power);
+    }
+
+    protected function Eat(Food $target): void
+    {
+        $this->remainingSteps--;
         $this->haveFood();
-        $this->map->remove($target);
-        if ($this->remainingSteps > 0)
-        {
-            $this->Turn(true, $this->remainingSteps);
-        }
+        $this->map->eat($target);
     }
+
 }
