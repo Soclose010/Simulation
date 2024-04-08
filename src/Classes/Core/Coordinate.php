@@ -27,6 +27,16 @@ class Coordinate
         return $this->y;
     }
 
+    public function getStringCords(): string
+    {
+        return "{$this->x}:{$this->y}";
+    }
+
+    public function getArrayCords() : array
+    {
+        return [$this->x, $this->y];
+    }
+
     public function getParent(): ?Coordinate
     {
         return $this->parent;
