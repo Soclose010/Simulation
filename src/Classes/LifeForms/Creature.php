@@ -21,7 +21,7 @@ abstract class Creature extends Food implements Eatable
 
     public function __construct(int $weight, int $speed, int $hp, Coordinate $coordinate, MapInterface $map)
     {
-        parent::__construct($weight);
+        parent::__construct($coordinate, $weight);
         $this->speed = $speed;
         $this->hp = $hp;
         $this->hunger = false;
@@ -38,13 +38,13 @@ abstract class Creature extends Food implements Eatable
     {
         if ($this->remainingSteps < count($steps) - 1)
         {
-            $this->coordinate = $steps[$this->remainingSteps];
+            $this->map->move($this, $steps[$this->remainingSteps]);
             $this->noFood();
             $this->remainingSteps = 0;
             return;
         }
         $this->remainingSteps-= count($steps) - 1;
-        $this->coordinate = end($steps);
+        $this->map->move($this, end($steps));
     }
 
     protected function haveFood(): void
@@ -95,6 +95,10 @@ abstract class Creature extends Food implements Eatable
     protected function isAlive(): bool
     {
         return $this->hp > 0;
+    }
+    public function haveAttacked(int $power): void
+    {
+        $this->hp-=$power;
     }
 
     public function changeTarget(string $newTarget): void

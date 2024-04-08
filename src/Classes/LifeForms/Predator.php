@@ -44,17 +44,17 @@ class Predator extends Creature implements PredatorEatable
        }
     }
 
-    private function Attack(Food $target): void
+    private function Attack(Creature $target): void
     {
         $this->remainingSteps--;
-        $this->map->damage($target, $this->power);
+        $target->haveAttacked($this->power);
     }
 
     protected function Eat(Food $target): void
     {
         $this->remainingSteps--;
         $this->haveFood();
-        $this->map->eat($target);
+        $target->Eaten();
     }
 
 }

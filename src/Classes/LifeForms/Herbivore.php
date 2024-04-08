@@ -41,6 +41,6 @@ class Herbivore extends Creature implements PredatorEatable
     protected function Eat(Food $target): void
     {
         $this->haveFood();
-        $this->map->eat($target);
+        $target->Eaten();
     }
 }
