@@ -2,7 +2,7 @@
 
 namespace App\Classes\LifeForms\Food;
 
-interface PredatorEatable
+interface PredatorEatable extends Eatable
 {
 
 }

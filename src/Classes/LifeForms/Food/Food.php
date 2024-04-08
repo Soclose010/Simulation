@@ -5,7 +5,7 @@ namespace App\Classes\LifeForms\Food;
 use App\Classes\Core\Coordinate;
 use App\Classes\LifeForms\Entity;
 
-abstract class Food extends Entity
+abstract class Food extends Entity implements Eatable
 {
     private int $weight;
 

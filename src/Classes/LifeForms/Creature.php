@@ -4,10 +4,9 @@ namespace App\Classes\LifeForms;
 use App\Classes\Core\Coordinate;
 use App\Classes\Core\Map\MapInterface;
 use App\Classes\Core\PathAlgorithms\PathAlgorithmInterface;
-use App\Classes\LifeForms\Food\Eatable;
 use App\Classes\LifeForms\Food\Food;
 
-abstract class Creature extends Food implements Eatable
+abstract class Creature extends Food
 {
     protected int $speed;
     protected int $hp;
