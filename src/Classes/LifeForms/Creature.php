@@ -104,15 +104,4 @@ abstract class Creature extends Food
     {
         $this->target = $newTarget;
     }
-    public function getSpeed(): int
-    {
-        return $this->speed;
-    }
-
-    public function getHp(): int
-    {
-        return $this->hp;
-    }
-
-
 }
