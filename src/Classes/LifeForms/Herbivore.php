@@ -3,6 +3,7 @@
 namespace App\Classes\LifeForms;
 
 use App\Classes\Core\Coordinate;
+use App\Classes\Core\Exceptions\NotFoundException;
 use App\Classes\Core\Map\MapInterface;
 use App\Classes\Core\PathAlgorithms\PathAlgorithmInterface;
 use App\Classes\LifeForms\Food\Food;
@@ -21,10 +22,16 @@ class Herbivore extends Creature implements PredatorEatable
     public function Turn(int $remainingSteps): void
     {
         $this->remainingSteps = $remainingSteps;
-        [$steps, $target] = $this->algorithm->findNearest($this->target);
-        $this->Move($steps);
-        $this->Interact($target);
-        $this->keepTurn();
+        try {
+            [$steps, $target] = $this->algorithm->findNearest($this->coordinate, $this->target);
+            $this->Move($steps);
+            $this->Interact($target);
+            $this->keepTurn();
+        }
+        catch (NotFoundException)
+        {
+            $this->noFood();
+        }
     }
 
     protected function Interact(Entity $target): void

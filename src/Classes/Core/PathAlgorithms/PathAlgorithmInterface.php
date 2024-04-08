@@ -1,8 +1,14 @@
 <?php
 
 namespace App\Classes\Core\PathAlgorithms;
+use App\Classes\Core\Coordinate;
+use App\Classes\Core\Exceptions\NotFoundException;
+
 interface PathAlgorithmInterface
 {
 
-    public function findNearest(string $target) : array;
+    /**
+     * @throws NotFoundException
+     */
+    public function findNearest(Coordinate $coordinate, string $target) : array;
 }
