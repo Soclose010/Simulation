@@ -3,8 +3,10 @@
 namespace App\Classes\Core\Map;
 
 use App\Classes\Core\Coordinate;
+use App\Classes\LifeForms\Creature;
 use App\Classes\LifeForms\Entity;
 use App\Classes\LifeForms\Food\Food;
+use App\Classes\LifeForms\Interactable;
 
 class Map implements MapInterface
 {
@@ -32,23 +34,29 @@ class Map implements MapInterface
 
     public function add(Entity $entity): void
     {
-        $this->entities[] = $entity;
+        if (!$this->isEntity($entity->getCoordinate()))
+        {
+            $this->entities[] = $entity;
+        }
     }
 
-    public function newTurn(): void
-    {
-        $this->clear();
-    }
-
-    private function clear(): void
+    public function clear(): void
     {
         $this->entities = array_filter($this->entities, function ($entity) {
             if ($entity instanceof Food)
             {
-                return $entity->getWeight() > 0;
+                return $entity->getWeight() > 0 && !$entity->spoiled();
             }
             return true;
         });
+
+        $this->entities = array_map(function ($entity){
+            if ($entity instanceof Creature && !$entity->isAlive())
+            {
+                $entity->visualizeDead();
+            }
+            return $entity;
+        }, $this->entities);
     }
 
     public function move(Entity $entity, Coordinate $coordinate): void
@@ -56,19 +64,20 @@ class Map implements MapInterface
         $entity->setCoordinate($coordinate);
     }
 
-    public function getEntityByCords(Coordinate $coordinate): Entity
+    public function getEntityByCords(Coordinate $coordinate): ?Entity
     {
-        return array_filter($this->entities, function ($entity) use ($coordinate)
+        $entity = array_filter($this->entities, function ($entity) use ($coordinate)
         {
             return $entity->getCoordinate()->getStringCords() === $coordinate->getStringCords();
-        })[0];
+        });
+        return array_pop($entity);
     }
 
-    public function getEntityBoundaries(Entity $entity): array
+    public function getBoundariesByCords(Coordinate $coordinate): array
     {
         $startCords = $this->start->getArrayCords();
         $endCords = $this->end->getArrayCords();
-        $entityCords = $entity->getCoordinate()->getArrayCords();
+        $entityCords = $coordinate->getArrayCords();
         $cordsCount = count($startCords);
         $resCords = [];
         for ($i = 0; $i < $cordsCount; $i++)
@@ -87,7 +96,7 @@ class Map implements MapInterface
         }
         else
         {
-            $res = $startCord;
+            $res[] = $startCord;
         }
         if ($entityCord < $endCord)
         {
@@ -95,8 +104,52 @@ class Map implements MapInterface
         }
         else
         {
-            $res = $entityCord;
+            $res[] = $entityCord;
         }
         return $res;
+    }
+    public function getBoundaries(): array
+    {
+        $startCords = $this->start->getArrayCords();
+        $endCords = $this->end->getArrayCords();
+        $cordsCount = count($startCords);
+        $resCords = [];
+        for ($i = 0; $i < $cordsCount; $i++)
+        {
+            $resCords = array_merge($resCords, [$startCords[$i], $endCords[$i]]);
+        }
+        return $resCords;
+    }
+
+    public function isEntity(Coordinate $coordinate): bool
+    {
+        foreach ($this->entities as $entity) {
+            if ($entity->getCoordinate()->getStringCords() === $coordinate->getStringCords())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return Creature[]
+     */
+    public function getCreatures(): array
+    {
+        return array_filter($this->entities, function ($entity) {
+            return $entity instanceof Creature;
+        });
+    }
+
+    public function isInteractable(Coordinate $coordinate): bool
+    {
+        foreach ($this->entities as $entity) {
+            if ($entity instanceof Interactable)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
