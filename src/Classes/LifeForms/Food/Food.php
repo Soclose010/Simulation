@@ -4,16 +4,17 @@ namespace App\Classes\LifeForms\Food;
 
 use App\Classes\Core\Coordinate;
 use App\Classes\LifeForms\Entity;
-use App\Classes\LifeForms\Interactable;
 
-abstract class Food extends Entity implements Eatable, Interactable
+abstract class Food extends Entity implements Eatable
 {
     private int $weight;
     private int $decay;
 
-    public function getDecay(): int
+    public function __construct(Coordinate $coordinate, int $weight)
     {
-        return $this->decay;
+        parent::__construct($coordinate);
+        $this->weight = $weight;
+        $this->decay = 0;
     }
 
     public function addDecay(): void
@@ -23,11 +24,17 @@ abstract class Food extends Entity implements Eatable, Interactable
 
     public function spoiled(): bool
     {
-        return $this->decay >=$this->weight;
+        return $this->decay >= $this->weight;
     }
+
     public function getWeight(): int
     {
         return $this->weight;
+    }
+
+    public function haveWeight(): bool
+    {
+        return $this->getWeight() > 0;
     }
 
     public function Eaten(): void
@@ -35,10 +42,5 @@ abstract class Food extends Entity implements Eatable, Interactable
         $this->weight--;
     }
 
-    public function __construct(Coordinate $coordinate, int $weight)
-    {
-        parent::__construct($coordinate);
-        $this->weight = $weight;
-        $this->decay = 0;
-    }
+
 }
