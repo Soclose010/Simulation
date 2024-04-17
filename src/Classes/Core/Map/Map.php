@@ -6,7 +6,6 @@ use App\Classes\Core\Coordinate;
 use App\Classes\LifeForms\Creature;
 use App\Classes\LifeForms\Entity;
 use App\Classes\LifeForms\Food\Food;
-use App\Classes\LifeForms\Interactable;
 
 class Map implements MapInterface
 {
@@ -25,17 +24,10 @@ class Map implements MapInterface
         $this->end = $end;
     }
 
-    public function remove(Entity $entity): void
-    {
-        $this->entities = array_filter($this->entities, function ($ent) use ($entity) {
-            return $ent->getCoordinate()->getStringCords() === $entity->getCoordinate()->getStringCords();
-        });
-    }
 
     public function add(Entity $entity): void
     {
-        if (!$this->isEntity($entity->getCoordinate()))
-        {
+        if (!$this->isEntity($entity->getCoordinate())) {
             $this->entities[] = $entity;
         }
     }
@@ -43,20 +35,17 @@ class Map implements MapInterface
     public function clear(): void
     {
         $this->entities = array_filter($this->entities, function ($entity) {
-            if ($entity instanceof Food)
-            {
-                return $entity->getWeight() > 0 && !$entity->spoiled();
+            if ($entity instanceof Food) {
+                return $entity->haveWeight() && !$entity->spoiled();
             }
             return true;
         });
 
-        $this->entities = array_map(function ($entity){
-            if ($entity instanceof Creature && !$entity->isAlive())
-            {
+        foreach ($this->entities as $entity) {
+            if ($entity instanceof Creature && !$entity->isAlive()) {
                 $entity->visualizeDead();
             }
-            return $entity;
-        }, $this->entities);
+        }
     }
 
     public function move(Entity $entity, Coordinate $coordinate): void
@@ -66,8 +55,7 @@ class Map implements MapInterface
 
     public function getEntityByCords(Coordinate $coordinate): ?Entity
     {
-        $entity = array_filter($this->entities, function ($entity) use ($coordinate)
-        {
+        $entity = array_filter($this->entities, function ($entity) use ($coordinate) {
             return $entity->getCoordinate()->getStringCords() === $coordinate->getStringCords();
         });
         return array_pop($entity);
@@ -80,42 +68,35 @@ class Map implements MapInterface
         $entityCords = $coordinate->getArrayCords();
         $cordsCount = count($startCords);
         $resCords = [];
-        for ($i = 0; $i < $cordsCount; $i++)
-        {
+        for ($i = 0; $i < $cordsCount; $i++) {
             $resCords = array_merge($resCords, $this->getCordWithBoundaries($startCords[$i], $endCords[$i], $entityCords[$i]));
         }
         return $resCords;
     }
 
-    private function getCordWithBoundaries(int $startCord, int $endCord, int $entityCord) : array
+    private function getCordWithBoundaries(int $startCord, int $endCord, int $entityCord): array
     {
         $res = [];
-        if ($entityCord > $startCord)
-        {
+        if ($entityCord > $startCord) {
             $res[] = $entityCord - 1;
-        }
-        else
-        {
+        } else {
             $res[] = $startCord;
         }
-        if ($entityCord < $endCord)
-        {
+        if ($entityCord < $endCord) {
             $res[] = $entityCord + 1;
-        }
-        else
-        {
+        } else {
             $res[] = $entityCord;
         }
         return $res;
     }
+
     public function getBoundaries(): array
     {
         $startCords = $this->start->getArrayCords();
         $endCords = $this->end->getArrayCords();
         $cordsCount = count($startCords);
         $resCords = [];
-        for ($i = 0; $i < $cordsCount; $i++)
-        {
+        for ($i = 0; $i < $cordsCount; $i++) {
             $resCords = array_merge($resCords, [$startCords[$i], $endCords[$i]]);
         }
         return $resCords;
@@ -124,8 +105,7 @@ class Map implements MapInterface
     public function isEntity(Coordinate $coordinate): bool
     {
         foreach ($this->entities as $entity) {
-            if ($entity->getCoordinate()->getStringCords() === $coordinate->getStringCords())
-            {
+            if ($entity->getCoordinate()->getStringCords() === $coordinate->getStringCords()) {
                 return true;
             }
         }
@@ -142,11 +122,17 @@ class Map implements MapInterface
         });
     }
 
-    public function isInteractable(Coordinate $coordinate): bool
+    public function clearCords(): void
     {
         foreach ($this->entities as $entity) {
-            if ($entity instanceof Interactable)
-            {
+            $entity->clearCordParent();
+        }
+    }
+
+    public function haveAliveCreatures(): bool
+    {
+        foreach ($this->entities as $entity) {
+            if ($entity instanceof Creature && $entity->isAlive()) {
                 return true;
             }
         }
