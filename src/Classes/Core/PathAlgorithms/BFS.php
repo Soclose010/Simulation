@@ -4,7 +4,6 @@ namespace App\Classes\Core\PathAlgorithms;
 use App\Classes\Core\Coordinate;
 use App\Classes\Core\Exceptions\NotFoundException;
 use App\Classes\Core\Map\MapInterface;
-use App\Classes\Items\Stationary;
 use App\Classes\LifeForms\Entity;
 
 class BFS implements PathAlgorithmInterface
@@ -40,7 +39,7 @@ class BFS implements PathAlgorithmInterface
         }
         if ($isFound)
         {
-            return [$this->calcSteps($searchedEntity->getCoordinate()), $searchedEntity];
+            return [$this->calcSteps($this->visited[array_key_last($this->visited)]), $searchedEntity];
         }
         throw new NotFoundException();
     }
@@ -48,36 +47,50 @@ class BFS implements PathAlgorithmInterface
     private function find(string $target): array
     {
         $entityCord = array_pop($this->queue);
-        $entity = $this->map->getEntityByCords($entityCord);
         $this->visited[] = $entityCord;
-        if ($this->isNeeded($entity, $target))
+        if ($this->map->isEntity($entityCord))
         {
-            return [true, $entity];
+            $entity = $this->map->getEntityByCords($entityCord);
+            if ($this->isNeeded($entity, $target))
+            {
+                return [true, $entity];
+            }
         }
-        [$startI, $endI, $startJ, $endJ] = $this->map->getEntityBoundaries($entity);
-        for ($i = $startI; $i << $endI; $i++)
+        [$startI, $endI, $startJ, $endJ] = $this->map->getBoundariesByCords($entityCord);
+        for ($i = $startI; $i <= $endI; $i++)
         {
             for ($j = $startJ; $j<= $endJ; $j++)
             {
-                $node = $this->map->getEntityByCords(new Coordinate($i, $j));
-                if (!$this->inQueue($node) && !$this->isVisited($node) && !$node instanceof Stationary)
+                $cord = new Coordinate($i, $j);
+                if (!$this->inQueue($cord) && !$this->isVisited($cord))
                 {
-                    $this->addToQueue($node, $entityCord);
+                    if ($this->map->isEntity($cord))
+                    {
+                        $entity = $this->map->getEntityByCords($cord);
+                        if ($this->isNeeded($entity, $target))
+                        {
+                            $this->addToQueue($cord, $entityCord);
+                        }
+                    }
+                    else
+                    {
+                        $this->addToQueue($cord, $entityCord);
+                    }
                 }
             }
         }
         return [false, null];
     }
 
-    private function addToQueue(Entity $node, Coordinate $parentCords): void
+    private function addToQueue(Coordinate $coordinate, Coordinate $parentCords): void
     {
-        array_unshift($this->queue,$node->getCoordinate());
-        $node->getCoordinate()->setParent($parentCords);
+        array_unshift($this->queue,$coordinate);
+        $coordinate->setParent($parentCords);
     }
 
     private function isNeeded(Entity $entity, string $target): bool
     {
-        return $entity instanceof $target && $entity->getWeight();
+        return $entity instanceof $target && $entity->haveWeight();
     }
 
     private function calcSteps(Coordinate $targetCords) : array
@@ -90,12 +103,13 @@ class BFS implements PathAlgorithmInterface
             array_unshift($steps,$tmp);
             $currentCords = $tmp;
         }
+        array_shift($steps);
         return $steps;
     }
 
-    private function inQueue(Entity $node) :bool
+    private function inQueue(Coordinate $coordinate) :bool
     {
-        $entityCords = $node->getCoordinate()->getStringCords();
+        $entityCords = $coordinate->getStringCords();
         foreach ($this->queue as $item) {
             if ($item->getStringCords() === $entityCords)
             {
@@ -105,9 +119,9 @@ class BFS implements PathAlgorithmInterface
         return false;
     }
 
-    private function isVisited(Entity $node) :bool
+    private function isVisited(Coordinate $coordinate) :bool
     {
-        $entityCords = $node->getCoordinate()->getStringCords();
+        $entityCords = $coordinate->getStringCords();
         foreach ($this->visited as $item) {
             if ($item->getStringCords() === $entityCords)
             {
@@ -122,4 +136,5 @@ class BFS implements PathAlgorithmInterface
         $this->queue = [];
         $this->visited = [];
     }
+
 }
