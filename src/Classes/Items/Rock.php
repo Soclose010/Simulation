@@ -11,5 +11,6 @@ class Rock extends Entity
     {
         parent::__construct($coordinate);
         $this->visual = "🗿";
+        $this->name = "камень";
     }
 }

@@ -11,5 +11,6 @@ class Tree extends Entity
     {
         parent::__construct($coordinate);
         $this->visual = "🌲";
+        $this->name = "дерево";
     }
 }
