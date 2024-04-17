@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Classes\LifeForms;
+
 use App\Classes\Core\Coordinate;
+use App\Classes\Core\Exceptions\NotFoundException;
 use App\Classes\Core\Map\MapInterface;
 use App\Classes\Core\PathAlgorithms\PathAlgorithmInterface;
 use App\Classes\LifeForms\Food\Food;
@@ -23,85 +25,83 @@ abstract class Creature extends Food
         parent::__construct($coordinate, $weight);
         $this->speed = $speed;
         $this->hp = $hp;
-        $this->hunger = false;
+        $this->hunger = true;
         $this->coordinate = $coordinate;
         $this->map = $map;
         $this->isEat = false;
+        $this->remainingSteps = $speed;
     }
 
-    abstract public function Turn(int $remainingSteps);
+
+    public function Turn(): void
+    {
+        try {
+            [$steps, $target] = $this->algorithm->findNearest($this->coordinate, $this->target);
+            $this->Move($steps);
+            $this->Interact($target);
+        } catch (NotFoundException) {
+            $this->noFood();
+            $this->remainingSteps = 0;
+        }
+    }
+
     abstract protected function Interact(Entity $target);
+
     abstract protected function Eat(Food $target);
 
     protected function Move(array $steps): void
     {
-        if ($this->remainingSteps < count($steps) - 1)
-        {
-            $this->map->move($this, $steps[$this->remainingSteps]);
-            $this->noFood();
+        if (count($steps) == 0) {
+            return;
+        }
+        if ($this->remainingSteps <= count($steps)) {
+            $this->map->move($this, $steps[$this->remainingSteps - 1]);
             $this->remainingSteps = 0;
             return;
         }
-        $this->remainingSteps-= count($steps) - 1;
-        $this->map->move($this, end($steps));
+        $this->remainingSteps -= count($steps);
+        $this->map->move($this, $steps[array_key_last($steps)]);
     }
 
     protected function haveFood(): void
     {
         $this->isEat = true;
-        if (!$this->hunger)
-        {
+        if (!$this->hunger) {
             $this->hp++;
-        }
-        else
-        {
+        } else {
             $this->hunger = false;
         }
     }
 
     protected function noFood(): void
     {
-        if (!$this->isEat)
-        {
-            if ($this->hunger)
-            {
+        if (!$this->isEat) {
+            if ($this->hunger) {
                 $this->hp--;
-            }
-            else
-            {
+            } else {
                 $this->hunger = true;
             }
         }
     }
 
-    protected function keepTurn(): void
+    public function haveSteps(): bool
     {
-        if ($this->haveSteps())
-        {
-            $this->Turn($this->remainingSteps);
-        }
-    }
-    protected function haveSteps() : bool
-    {
-        if ($this->remainingSteps = 0)
-        {
-            $this->noFood();
-            return false;
-        }
-        return true;
+        return $this->remainingSteps != 0;
     }
 
-    protected function isAlive(): bool
+    public function isAlive(): bool
     {
         return $this->hp > 0;
     }
+
     public function haveAttacked(int $power): void
     {
-        $this->hp-=$power;
+        $this->hp -= $power;
     }
 
-    public function changeTarget(string $newTarget): void
+    public function clear(): void
     {
-        $this->target = $newTarget;
+        $this->remainingSteps = $this->speed;
+        $this->isEat = false;
     }
 }

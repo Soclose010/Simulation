@@ -3,7 +3,6 @@
 namespace App\Classes\LifeForms;
 
 use App\Classes\Core\Coordinate;
-use App\Classes\Core\Exceptions\NotFoundException;
 use App\Classes\Core\Map\MapInterface;
 use App\Classes\Core\PathAlgorithms\PathAlgorithmInterface;
 use App\Classes\LifeForms\Food\Food;
@@ -14,39 +13,25 @@ class Herbivore extends Creature implements PredatorEatable
 {
     public function __construct(int $weight, int $speed, int $hp, Coordinate $coordinate, MapInterface $map, PathAlgorithmInterface $algorithm)
     {
-        parent::__construct($weight,$speed ,$hp,$coordinate,$map);
+        parent::__construct($weight, $speed, $hp, $coordinate, $map);
         $this->algorithm = $algorithm;
         $this->target = HerbivoreEatable::class;
-    }
-
-    public function Turn(int $remainingSteps): void
-    {
-        $this->remainingSteps = $remainingSteps;
-        try {
-            [$steps, $target] = $this->algorithm->findNearest($this->coordinate, $this->target);
-            $this->Move($steps);
-            $this->Interact($target);
-            $this->keepTurn();
-        }
-        catch (NotFoundException)
-        {
-            $this->noFood();
-        }
+        $this->visual = "🐇";
+        $this->name = "заяц";
     }
 
     protected function Interact(Entity $target): void
     {
-        if ($this->haveSteps())
-        {
+        if ($this->haveSteps()) {
             $this->Eat($target);
-        }
-        else
-        {
+        } else {
             $this->noFood();
         }
     }
+
     protected function Eat(Food $target): void
     {
+        $this->remainingSteps--;
         $this->haveFood();
         $target->Eaten();
     }
