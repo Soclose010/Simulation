@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Classes\LifeForms;
+
 use App\Classes\Core\Coordinate;
 
 abstract class Entity
@@ -14,14 +15,17 @@ abstract class Entity
     {
         $this->coordinate = $coordinate;
     }
+
     public function getCoordinate(): Coordinate
     {
         return $this->coordinate;
     }
+
     public function setCoordinate(Coordinate $coordinate): void
     {
         $this->coordinate = $coordinate;
     }
+
     public function visualize(): string
     {
         return $this->visual;
@@ -31,8 +35,14 @@ abstract class Entity
     {
         $this->visual = "🥩";
     }
+
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function clearCordParent(): void
+    {
+        $this->coordinate->setParent(null);
     }
 }

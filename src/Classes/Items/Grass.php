@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Classes\Items;
+
 use App\Classes\Core\Coordinate;
 use App\Classes\LifeForms\Food\Food;
 use App\Classes\LifeForms\Food\HerbivoreEatable;

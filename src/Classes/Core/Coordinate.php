@@ -17,22 +17,12 @@ class Coordinate
         $this->parent = null;
     }
 
-    public function getX(): int
-    {
-        return $this->x;
-    }
-
-    public function getY(): int
-    {
-        return $this->y;
-    }
-
     public function getStringCords(): string
     {
         return "{$this->x}:{$this->y}";
     }
 
-    public function getArrayCords() : array
+    public function getArrayCords(): array
     {
         return [$this->x, $this->y];
     }
