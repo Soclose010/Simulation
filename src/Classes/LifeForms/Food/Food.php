@@ -42,5 +42,10 @@ abstract class Food extends Entity implements Eatable
         $this->weight--;
     }
 
+    public function getDecay(): int
+    {
+        return $this->decay;
+    }
+
 
 }

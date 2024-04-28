@@ -5,6 +5,7 @@ namespace App\Classes\Core\Actions;
 use App\Classes\Core\Coordinate;
 use App\Classes\Core\Map\MapInterface;
 use App\Classes\Core\PathAlgorithms\BFS;
+use App\Classes\Core\Printer\PrinterInterface;
 use App\Classes\Items\Grass;
 use App\Classes\Items\Rock;
 use App\Classes\LifeForms\Herbivore;
@@ -13,10 +14,12 @@ use App\Classes\LifeForms\Predator;
 class InitAction implements ActionInterface
 {
     private MapInterface $map;
+    private PrinterInterface $printer;
 
-    public function __construct(MapInterface $map)
+    public function __construct(MapInterface $map, PrinterInterface $printer)
     {
         $this->map = $map;
+        $this->printer = $printer;
     }
 
     public function make(): void
@@ -70,14 +73,14 @@ class InitAction implements ActionInterface
         $algo = new BFS($this->map);
         while ($countHerb > 0) {
             $cord = new Coordinate(rand($startI, $endI), rand($startJ, $endJ));
-            $herb = new Herbivore(rand(1, 2), 2, 2, $cord, $this->map, $algo);
+            $herb = new Herbivore(rand(1, 2), 2, 2, $cord, $this->map, $this->printer,$algo);
             $this->map->add($herb);
             $countHerb--;
         }
 
         while ($countPred > 0) {
             $cord = new Coordinate(rand($startI, $endI), rand($startJ, $endJ));
-            $pred = new Predator(rand(2, 5), 5, 3, 1, $cord, $this->map, $algo);
+            $pred = new Predator(rand(2, 5), 5, 3, 1, $cord, $this->map, $this->printer,$algo);
             $this->map->add($pred);
             $countPred--;
         }
